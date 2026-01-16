@@ -56,23 +56,27 @@ export default function App() {
 
   return (
     <>
-      <NavBar movies={movies} />
-      <Main movies={movies} />
+      <NavBar>
+        <Logo />
+        <Search />
+        <NumResults movies={movies} />
+      </NavBar>
+      <Main>
+        <ListBox>
+          <MovieList movies={movies} />
+        </ListBox>
+        <WatchedBox />
+      </Main>
     </>
   );
 }
 
 // Nav Bar component
-function NavBar({ movies }) {
-  return (
-    <nav className='nav-bar'>
-      <Logo />
-      <Search />
-      <NumResults movies={movies} />
-    </nav>
-  );
+function NavBar({ children }) {
+  return <nav className='nav-bar'>{children}</nav>;
 }
 
+// Lovo
 function Logo() {
   return (
     <div className='logo'>
@@ -81,6 +85,7 @@ function Logo() {
     </div>
   );
 }
+
 // reusable search bar
 function Search() {
   const [query, setQuery] = useState('');
@@ -95,6 +100,7 @@ function Search() {
   );
 }
 
+// Number of Movie Results
 function NumResults({ movies }) {
   return (
     <p className='num-results'>
@@ -104,18 +110,12 @@ function NumResults({ movies }) {
 }
 
 // Main component
-function Main({ movies }) {
-  const [watched, setWatched] = useState(tempWatchedData);
-
-  return (
-    <main className='main'>
-      <ListBox movies={movies} />
-      <WatchedBox watched={watched} />
-    </main>
-  );
+function Main({ children }) {
+  return <main className='main'>{children}</main>;
 }
 
-function ListBox({ movies }) {
+// List Box
+function ListBox({ children }) {
   const [isOpen1, setIsOpen1] = useState(true);
 
   return (
@@ -126,11 +126,12 @@ function ListBox({ movies }) {
       >
         {isOpen1 ? '–' : '+'}
       </button>
-      {isOpen1 && <MovieList movies={movies} />}
+      {isOpen1 && children}
     </div>
   );
 }
 
+// Movie List
 function MovieList({ movies }) {
   return (
     <ul className='list'>
@@ -141,6 +142,7 @@ function MovieList({ movies }) {
   );
 }
 
+// Movie
 function Movie({ movie }) {
   return (
     <li>
@@ -156,8 +158,10 @@ function Movie({ movie }) {
   );
 }
 
-function WatchedBox({ watched }) {
+// Watched Box
+function WatchedBox() {
   const [isOpen2, setIsOpen2] = useState(true);
+  const [watched, setWatched] = useState(tempWatchedData);
 
   return (
     <div className='box'>
@@ -177,6 +181,7 @@ function WatchedBox({ watched }) {
   );
 }
 
+// Watched Summary
 function WatchedSummary({ watched }) {
   const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
   const avgUserRating = average(watched.map((movie) => movie.userRating));
@@ -207,6 +212,7 @@ function WatchedSummary({ watched }) {
   );
 }
 
+// Watched Movie List
 function WatchedMovieList({ watched }) {
   return (
     <ul className='list'>
@@ -217,6 +223,7 @@ function WatchedMovieList({ watched }) {
   );
 }
 
+// Watched Movie
 function WatchedMovie({ movie }) {
   return (
     <li>
