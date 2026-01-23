@@ -1,5 +1,8 @@
 import { useState } from 'react';
 
+// PropTypes - not many use case. many uses typescript now instead of react prop-types
+import PropTypes from 'prop-types';
+
 // this can be outside the function. it's not necessary to render everytime,
 // If it is inside the function, when StarRating is rendered, this is regenerated again
 const containerStyle = {
@@ -10,6 +13,17 @@ const containerStyle = {
 
 const starContainerStyle = {
   display: 'flex',
+};
+
+// Proptypes are deprecated. Only showing the code here
+StarRating.propTypes = {
+  maxRating: PropTypes.number,
+  defaultRating: PropTypes.number,
+  color: PropTypes.string,
+  size: PropTypes.number,
+  messages: PropTypes.array,
+  className: PropTypes.string,
+  onSetRating: PropTypes.func,
 };
 
 export default function StarRating({
@@ -33,8 +47,9 @@ export default function StarRating({
   };
 
   function handleRating(rating) {
-    setRating(rating + 1);
-    setMovieRating(rating + 1);
+    setRating(rating);
+    // not all components have setMovieRating
+    setMovieRating && setMovieRating(rating);
   }
 
   return (
@@ -44,7 +59,7 @@ export default function StarRating({
           <Star
             key={i}
             full={tempRating ? tempRating >= i + 1 : rating >= i + 1}
-            onRate={() => handleRating(i)}
+            onRate={() => handleRating(i + 1)}
             onHoverIn={() => setTempRating(i + 1)}
             onHoverOut={() => setTempRating(0)}
             color={color}
