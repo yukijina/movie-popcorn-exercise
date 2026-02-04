@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import './index.css';
 
 const tempMovieData = [
   {
@@ -56,7 +57,7 @@ const KEY = 'c16d042b';
 export default function App() {
   const [query, setQuery] = useState('');
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState(tempWatchedData);
+  const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const tempQuery = 'interstellar';
