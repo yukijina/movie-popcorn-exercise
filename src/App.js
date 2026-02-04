@@ -54,9 +54,12 @@ const KEY = 'c16d042b';
 
 // App Component
 export default function App() {
-  const [movies, setMovies] = useState(tempMovieData);
+  const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState(tempWatchedData);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
+  // fetch data using fetch/then
   // useEffect(function () {
   //   fetch(`http://www.omdbapi.com/?i=tt3896198&apikey=${KEY}&s=interstellar`)
   //     .then((res) => res.json())
@@ -65,14 +68,27 @@ export default function App() {
   //   // second argument [] - only executed when the component first mount
   // }, []);
 
+  // fetch data using async function
   useEffect(function () {
     async function fetchMovies() {
-      const res = await fetch(
-        `http://www.omdbapi.com/?i=tt3896198&apikey=${KEY}&s=interstellar`
-      );
+      try {
+        setIsLoading(true);
+        setError('');
+        const res = await fetch(
+          `http://www.omdbapi.com/?i=tt3896198&apikey=${KEY}&s=interstellar`
+        );
 
-      const data = await res.json();
-      setMovies(data.Search);
+        const data = await res.json();
+
+        // when there is no data
+        if (data.Response === 'False') throw new Error('Movies not found');
+
+        setMovies(data.Search);
+      } catch (err) {
+        console.log(err.message);
+      } finally {
+        setIsLoading(false);
+      }
     }
     fetchMovies();
   }, []);
@@ -86,7 +102,9 @@ export default function App() {
       </NavBar>
       <Main>
         <Box>
-          <MovieList movies={movies} />
+          {isLoading && <Loader />}
+          {!isLoading && !error && <MovieList movies={movies} />}
+          {error && <ErrorMessage message={error} />}
         </Box>
 
         <Box>
@@ -98,6 +116,17 @@ export default function App() {
   );
 }
 
+function Loader() {
+  return <p className='loader'>Loading...</p>;
+}
+
+function ErrorMessage(message) {
+  return (
+    <p class='error'>
+      <span>⛔️</span> {message}
+    </p>
+  );
+}
 // Nav Bar component
 function NavBar({ children }) {
   return <nav className='nav-bar'>{children}</nav>;
