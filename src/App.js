@@ -304,6 +304,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched }) {
     };
 
     onAddWatched(newWatchedMovie);
+    onCloseMovie();
   }
 
   useEffect(
@@ -332,7 +333,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched }) {
       ) : (
         <>
           <header>
-            <button className='details'>&larr;{selectedId}</button>
+            <button className='btn-back'>&larr;</button>
             <img src={poster} alt={`Poster of ${title} movie`} />
             <div className='details-overview'>
               <h2>{title}</h2>
@@ -368,9 +369,11 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched }) {
 
 // Watched Summary
 function WatchedSummary({ watched }) {
-  const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
+  const avgImdbRating = average(
+    watched.map((movie) => movie.imdbRating)
+  ).toFixed(2);
   const avgUserRating = average(watched.map((movie) => movie.userRating));
-  const avgRuntime = average(watched.map((movie) => movie.runtime));
+  const avgRuntime = Math.round(average(watched.map((movie) => movie.runtime)));
 
   return (
     <div className='summary'>
