@@ -278,6 +278,8 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched }) {
   // this movie is the one selected
   const [movie, setMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [userRating, setUserRating] = useState('');
+
   console.log(selectedId);
   // destructure
   const {
@@ -301,6 +303,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched }) {
       poster,
       imdbRating: Number(imdbRating),
       runtime: Number(runtime.split(' ').at(0)),
+      userRating,
     };
 
     onAddWatched(newWatchedMovie);
@@ -327,13 +330,15 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched }) {
   );
 
   return (
-    <div className='details' onClick={onCloseMovie}>
+    <div className='details'>
       {isLoading ? (
         <Loader />
       ) : (
         <>
           <header>
-            <button className='btn-back'>&larr;</button>
+            <button className='btn-back' onClick={onCloseMovie}>
+              &larr;
+            </button>
             <img src={poster} alt={`Poster of ${title} movie`} />
             <div className='details-overview'>
               <h2>{title}</h2>
@@ -349,11 +354,16 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched }) {
 
           <section>
             <div className='rating'>
-              <StarRating maxRating={10} size={24} />
-
-              <button className='btn-add' onClick={handleAdd}>
-                + Add toWwatched List
-              </button>
+              <StarRating
+                maxRating={10}
+                size={24}
+                onSetRating={setUserRating}
+              />
+              {userRating > 0 && (
+                <button className='btn-add' onClick={handleAdd}>
+                  + Add toWwatched List
+                </button>
+              )}
             </div>
             <p>
               <em>{plot}</em>

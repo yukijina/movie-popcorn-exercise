@@ -34,6 +34,7 @@ export default function StarRating({
   messages = [],
   defaultRating = 0,
   setMovieRating,
+  onSetRating,
 }) {
   // Set default maxRating as 5 (in case maxRating was empty/not specified)
   const [rating, setRating] = useState(defaultRating);
@@ -48,6 +49,7 @@ export default function StarRating({
 
   function handleRating(rating) {
     setRating(rating);
+    onSetRating(rating);
     // not all components have setMovieRating
     setMovieRating && setMovieRating(rating);
   }
