@@ -56,7 +56,7 @@ const KEY = 'c16d042b';
 
 // App Component
 export default function App() {
-  const [query, setQuery] = useState('indiana');
+  const [query, setQuery] = useState('');
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -94,7 +94,13 @@ export default function App() {
       //browser function
       const controller = new AbortController();
 
-      async function fetchMovies() {
+      if (query.length < 3) {
+        setMovies([]);
+        setError('');
+        return;
+      }
+
+      const waitFetch = setTimeout(async function fetchMovies() {
         try {
           setIsLoading(true);
           setError('');
@@ -105,6 +111,8 @@ export default function App() {
             { signal: controller.signal }
           );
 
+          if (!res.ok)
+            throw new Error('Somehthing went wrong with fetching movies');
           const data = await res.json();
 
           // when there is no data
@@ -112,6 +120,7 @@ export default function App() {
 
           setMovies(data.Search);
           setError('');
+          setIsLoading(false);
         } catch (err) {
           console.log(err.message);
 
@@ -121,17 +130,16 @@ export default function App() {
         } finally {
           setIsLoading(false);
         }
-      }
-      if (query.length < 3) {
-        setMovies([]);
-        setError('');
-        return;
-      }
-      fetchMovies();
+      }, 500);
+
+      handleCloseMovie();
+
+      // fetchMovies();
 
       // clear up function
       return function () {
         controller.abort();
+        clearTimeout(waitFetch);
       };
     },
     [query]
@@ -307,6 +315,22 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     (movie) => movie.imdbID === selectedId
   )?.userRating;
 
+  // Use escape keydown event to go back to the main page
+  useEffect(function () {
+    const callback = function (e) {
+      if (e.code === 'Escape') {
+        onCloseMovie();
+        // console.log('Closing');
+      }
+    };
+    document.addEventListener('keydown', callback);
+
+    //clean up - each time it mounts, it remves previous keydown
+    return function () {
+      document.removeEventListener('keydown', callback);
+    };
+  }, []);
+
   // destructure
   const {
     Title: title,
@@ -347,7 +371,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
         );
 
         const data = await res.json();
-        console.log(data);
+        // console.log(data);
         setMovie(data);
         setIsLoading(false);
       }
